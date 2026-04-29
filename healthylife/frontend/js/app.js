@@ -25,6 +25,7 @@ function initApp(user) {
   renderTrackerPage();
   renderChatPage();
   renderDiaryPage();
+  renderShowcasePage();
 
   navigate("dashboard");
 }
