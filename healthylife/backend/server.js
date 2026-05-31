@@ -3,9 +3,9 @@
 // ============================================================
 
 const express = require("express");
-const cors    = require("cors");
-const dotenv  = require("dotenv");
-const path    = require("path");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const path = require("path");
 const connectDB = require("./config/db");
 
 // Load environment variables from .env
@@ -21,23 +21,29 @@ app.use(cors());                          // Allow cross-origin requests
 app.use(express.json());                  // Parse JSON request bodies
 app.use(express.urlencoded({ extended: true }));
 
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`📨 [${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
+});
+
 // Serve the frontend static files
 app.use(express.static(path.join(__dirname, "../frontend")));
 
 // ── API Routes ──────────────────────────────────────────────
-app.use("/api/users",  require("./routes/userRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/health", require("./routes/healthRoutes"));
-app.use("/api/diary",  require("./routes/diaryRoutes"));
-app.use("/api/ai",     require("./routes/aiRoutes"));
+app.use("/api/diary", require("./routes/diaryRoutes"));
+app.use("/api/ai", require("./routes/aiRoutes"));
+
+// ── 404 handler for unknown API routes ──────────────────────
+app.use("/api", (req, res) => {
+  res.status(404).json({ success: false, message: "API route not found" });
+});
 
 // ── Catch-all: serve index.html for any non-API route ───────
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
-});
-
-// ── 404 handler for unknown API routes ──────────────────────
-app.use((req, res) => {
-  res.status(404).json({ success: false, message: "Route not found" });
 });
 
 // ── Global error handler ─────────────────────────────────────

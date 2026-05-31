@@ -2,7 +2,15 @@
 // js/api.js — Centralized API Fetch Helper
 // ============================================================
 
-const API_BASE = "/api";
+// Determine API base URL based on environment
+const API_BASE = (() => {
+  // In development, use localhost
+  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+    return "http://localhost:5000/api";
+  }
+  // In production (Vercel), use the current domain
+  return `${window.location.origin}/api`;
+})();
 
 /**
  * Make an authenticated request to the backend.
@@ -25,12 +33,17 @@ async function apiRequest(endpoint, method = "GET", body = null) {
 
   if (body) options.body = JSON.stringify(body);
 
-  const res = await fetch(API_BASE + endpoint, options);
-  const data = await res.json();
+  try {
+    const res = await fetch(API_BASE + endpoint, options);
+    const data = await res.json();
 
-  if (!res.ok) {
-    throw new Error(data.message || "Request failed");
+    if (!res.ok) {
+      throw new Error(data.message || `Request failed with status ${res.status}`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error(`API Error [${method} ${endpoint}]:`, error);
+    throw error;
   }
-
-  return data;
 }

@@ -2,14 +2,18 @@
 // controllers/userController.js — Auth & Profile Logic
 // ============================================================
 
-const jwt  = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-// Helper: generate signed JWT
-const generateToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET, {
+// Helper: generate signed JWT with validation
+const generateToken = (id) => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not configured in environment variables");
+  }
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
+};
 
 // ── POST /api/users/register ─────────────────────────────────
 const registerUser = async (req, res) => {
@@ -31,8 +35,8 @@ const registerUser = async (req, res) => {
       success: true,
       message: "Account created successfully",
       data: {
-        _id:   user._id,
-        name:  user.name,
+        _id: user._id,
+        name: user.name,
         email: user.email,
         token: generateToken(user._id),
       },
@@ -61,8 +65,8 @@ const loginUser = async (req, res) => {
       success: true,
       message: "Login successful",
       data: {
-        _id:   user._id,
-        name:  user.name,
+        _id: user._id,
+        name: user.name,
         email: user.email,
         token: generateToken(user._id),
       },
@@ -79,9 +83,9 @@ const getUserProfile = async (req, res) => {
     res.status(200).json({
       success: true,
       data: {
-        _id:     user._id,
-        name:    user.name,
-        email:   user.email,
+        _id: user._id,
+        name: user.name,
+        email: user.email,
         metrics: user.metrics,
       },
     });
@@ -94,7 +98,7 @@ const getUserProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    if (req.body.name)    user.name = req.body.name;
+    if (req.body.name) user.name = req.body.name;
     if (req.body.metrics) user.metrics = { ...user.metrics, ...req.body.metrics };
     await user.save();
     res.status(200).json({ success: true, message: "Profile updated", data: user });

@@ -2,11 +2,17 @@
 // middleware/auth.js — JWT Authentication Middleware
 // ============================================================
 
-const jwt  = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const protect = async (req, res, next) => {
   let token;
+
+  // Validate JWT_SECRET is set
+  if (!process.env.JWT_SECRET) {
+    console.error("❌ JWT_SECRET is not set in environment variables");
+    return res.status(500).json({ success: false, message: "Server configuration error" });
+  }
 
   // Check for Bearer token in Authorization header
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
@@ -30,6 +36,7 @@ const protect = async (req, res, next) => {
 
     next();
   } catch (error) {
+    console.error("❌ Token verification error:", error.message);
     return res.status(401).json({ success: false, message: "Token invalid or expired" });
   }
 };
