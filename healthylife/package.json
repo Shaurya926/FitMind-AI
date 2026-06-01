@@ -1,0 +1,35 @@
+{
+  "name": "healthylife-ai",
+  "version": "1.0.0",
+  "description": "HealthyLife AI - Full Stack Health Assistant",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "build": "echo 'Backend ready'"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.6.3",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "health",
+    "fitness",
+    "AI",
+    "wellness"
+  ],
+  "author": "HealthyLife Team",
+  "license": "MIT",
+  "engines": {
+    "node": "18.x"
+  }
+}
+
