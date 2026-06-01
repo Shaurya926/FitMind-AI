@@ -9,7 +9,23 @@ const path = require("path");
 const connectDB = require("./config/db");
 
 // Load environment variables from .env
-dotenv.config();
+const envPath = path.join(__dirname, ".env");
+const envConfig = dotenv.config({ path: envPath });
+if (envConfig.error) {
+  console.warn("⚠️  .env file not found at:", envPath);
+  console.warn("📝 Creating one with default values...");
+}
+
+// Verify critical environment variables
+if (!process.env.JWT_SECRET) {
+  console.error("❌ FATAL: JWT_SECRET is not set!");
+  console.error("📝 Make sure .env file has: JWT_SECRET=your_secret_key");
+  console.error("🔍 Expected .env path:", envPath);
+  console.error("🔍 Current __dirname:", __dirname);
+  process.exit(1);
+}
+
+console.log("✅ JWT_SECRET loaded successfully from:", envPath);
 
 // Connect to MongoDB
 connectDB();

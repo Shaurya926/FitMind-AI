@@ -20,7 +20,8 @@ const protect = async (req, res, next) => {
   }
 
   if (!token) {
-    return res.status(401).json({ success: false, message: "Not authorized, no token" });
+    console.error("❌ Missing Authentication header in request to:", req.path);
+    return res.status(401).json({ success: false, message: "Missing Authentication header" });
   }
 
   try {
